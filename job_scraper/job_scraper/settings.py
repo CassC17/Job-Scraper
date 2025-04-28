@@ -89,4 +89,13 @@ ROBOTSTXT_OBEY = True
 
 # Set settings whose default value is deprecated to a future-proof value
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
-FEED_EXPORT_ENCODING = "utf-8"
+FEEDS = {
+    "jobs.json": {
+        "format": "json",
+        "overwrite": True,
+        "encoding": "utf8", 
+        "ensure_ascii": False 
+    }
+}
+
+

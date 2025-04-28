@@ -3,7 +3,7 @@ from job_scraper.items import JobScraperItem
 import pathlib
 
 class JobSpider(scrapy.Spider):
-    name = "jobs-css"
+    name = "jobs"
     allowed_domains = ["lesjeudis.com"]
     start_urls = [ f"https://lesjeudis.com/jobs?page={i}&limit=50" for i in range(5)]
 
@@ -48,24 +48,17 @@ class JobSpider(scrapy.Spider):
         item["company"] = response.css("a[data-testid='job-card-company-name-link']::text").get(default="Entreprise inconnue")
 
         detail_links = response.css("div[data-testid='job-detail-section'] a")
-        location = None
+        item["location"] = response.xpath("//svg[@data-testid='job-details-location']/following-sibling::a/text()").get(default="Localisation inconnue").strip()
+
         contract_type = None
         for link in detail_links:
             href = link.attrib.get("href", "")
             text = link.css("::text").get(default="").strip()
             if "occupationType=" in href:
                 contract_type = text
-            else:
-                location = text
-        item["location"] = location if location else "Localisation inconnue"
         item["contract_type"] = contract_type if contract_type else "Type de contrat inconnu"
 
-        item["date_posted"] = response.css("div.JobDetail_mobileValue__DLlav::text").get(default="Date inconnue").strip()
+        item["date_posted"] = response.xpath("//svg[@data-testid='job-details-calendar']/following-sibling::div/text()").get(default="Date inconnue").strip()
         
         item["link"] = response.url
         yield item
-
-        
-        
-        
-        
